@@ -16,6 +16,14 @@ module Scale
       BYTES_LENGTH = 8
     end
 
+    class U256
+      include UInt
+      BYTES_LENGTH = 32
+    end
 
+    class U512
+      include UInt
+      BYTES_LENGTH = 64
+    end
   end
 end

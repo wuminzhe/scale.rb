@@ -1,5 +1,6 @@
 require "scale/version"
 require "scale/base"
+require "scale/types"
 require "scale/integer"
 require "scale/compact"
 require "scale/struct"
