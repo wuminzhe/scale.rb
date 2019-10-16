@@ -114,9 +114,23 @@ end
 
 describe Scale::Types::None do
   it "eqls with 0x00" do
-    o = Scale::Types::None.new
+    o = Scale::Types::None.new("0x00")
     expect(o.to_hex).to eql("0x00")
     expect(o.bytes).to eql([0])
+  end
+end
+
+describe Scale::Types::SomeBool do
+  it "can create from scale hex string" do
+    o = Scale::Types::SomeBool.new("0x01")
+    expect(o.value.value).to eql(false)
+    expect(o.bytes).to eql([1])
+    expect(o.value.bytes).to eql([0])
+
+    o2 = Scale::Types::SomeBool.new("0x02")
+    expect(o2.value.value).to eql(true)
+    expect(o2.bytes).to eql([2])
+    expect(o2.value.bytes).to eql([1])
   end
 end
 

@@ -5,9 +5,27 @@ module Scale
       include SingleValue
       BYTES_LENGTH = 1
 
-      def initialize
-        @value = nil
-        @bytes = [0]
+      def decode
+        if @bytes == [0]
+          @value = nil
+        else
+          raise "Provided data's length is not correct, #{self.class} expect [0] but #{@bytes}"
+        end
+      end
+    end
+
+    class SomeBool
+      include SingleValue
+      BYTES_LENGTH = 1
+
+      def decode
+        if @bytes == [1]
+          @value = Bool.new([0])
+        elsif @bytes == [2]
+          @value = Bool.new([1])
+        else
+          raise "Provided data's length is not correct, #{self.class} expect [0] or [1] but #{@bytes}"
+        end
       end
     end
 
@@ -16,6 +34,7 @@ module Scale
 
       set_value_type Scale::Types::U32
     end
+
 
     # module IntOrBool
       # MEMBERS = [:Int, :Bool]
