@@ -93,6 +93,43 @@ describe Scale::Types::Student do
     expect(s.grade.value).to eql(69)
   end
 end
+
+describe Scale::Types::SomeU32 do
+  it "can create from scale hex string" do
+    o = Scale::Types::SomeU32.new("0x0145000000")
+
+    expect(Scale::Types::SomeU32::VALUE_TYPE).to eql(Scale::Types::U32)
+    expect(Scale::Types::SomeU32::BYTES_LENGTH).to eql(5)
+    expect(o.value.value) == 69
+  end
+
+  it "can create from scale type" do
+    o = Scale::Types::SomeU32.new(69.to_u32)
+
+    expect(Scale::Types::SomeU32::VALUE_TYPE).to eql(Scale::Types::U32)
+    expect(Scale::Types::SomeU32::BYTES_LENGTH).to eql(5)
+    expect(o.value.value) == 69
+  end
+end
+
+describe Scale::Types::None do
+  it "eqls with 0x00" do
+    o = Scale::Types::None.new
+    expect(o.to_hex).to eql("0x00")
+    expect(o.bytes).to eql([0])
+  end
+end
+
+#describe Scale::Types::IntOrBool do
+#  it "xxx" do
+#    expect(Scale::Types::IntOrBool::Int.new("0x002a").to_hex).to eql("0x002a")
+#    expect(Scale::Types::IntOrBool::Int.new("0x002a").inner.value).to eql(42)
+#    expect(Scale::Types::IntOrBool::Bool.new("0x0101").to_hex).to eql("0x0101")
+#    expect(Scale::Types::IntOrBool::Bool.new("0x0101").inner.value).to eql(true)
+#    expect(Scale::Types::IntOrBool::Int::BYTES_LENGTH).to eql(2)
+#    expect(Scale::Types::IntOrBool::Bool::BYTES_LENGTH).to eql(2)
+#  end
+#end
 # describe Scale::Types::Compact do
 #   it "can create from scale bytes array" do 
 #     bytes_a = [4] # 1

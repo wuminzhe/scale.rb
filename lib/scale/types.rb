@@ -1,21 +1,57 @@
 module Scale
   module Types
 
-    class H256
-      include ScaleBytes
-      BYTES_LENGTH = 32
-      def initialize(data)
-        init_bytes(data)
+    class None
+      include SingleValue
+      BYTES_LENGTH = 1
+
+      def initialize
+        @value = nil
+        @bytes = [0]
       end
     end
 
-    class H512
-      include ScaleBytes
-      BYTES_LENGTH = 64
-      def initialize(data)
-        init_bytes(data)
-      end
+    class SomeU32
+      include Some
+
+      set_value_type Scale::Types::U32
     end
+
+    # module IntOrBool
+      # MEMBERS = [:Int, :Bool]
+
+      # class Int 
+        # include ScaleBytes
+        # INNER_TYPE = Scale::Types::U8
+        # BYTES_LENGTH = INNER_TYPE::BYTES_LENGTH + 1
+        # attr_accessor :inner
+
+        # def initialize(data)
+          # if data.class.to_s == 'String' and data.start_with?('0x') and data.length % 2 == 0
+            # @bytes = data[2..].scan(/../).map(&:hex)
+            # raise "Provided data's length is not correct, #{self.class} expect #{self.class::BYTES_LENGTH} but #{arr.length}" if self.class::BYTES_LENGTH != @bytes.length
+            # @inner = self.class::INNER_TYPE.new(@bytes[1..])
+          # end
+        # end
+      # end
+
+      # class Bool
+        # include ScaleBytes
+        # INNER_TYPE = Scale::Types::Bool
+        # BYTES_LENGTH = INNER_TYPE::BYTES_LENGTH + 1
+        # attr_accessor :inner
+
+        # def initialize(data)
+          # if data.class.to_s == 'String' and data.start_with?('0x') and data.length % 2 == 0
+            # @bytes = data[2..].scan(/../).map(&:hex)
+            # raise "Provided data's length is not correct, #{self.class} expect #{self.class::BYTES_LENGTH} but #{arr.length}" if self.class::BYTES_LENGTH != @bytes.length
+            # @inner = self.class::INNER_TYPE.new(@bytes[1..])
+          # end
+        # end
+      # end
+    # end
+
+
 
     class Student
       include StructBase

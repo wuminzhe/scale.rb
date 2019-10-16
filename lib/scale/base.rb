@@ -12,11 +12,11 @@ module ScaleBytes
 
   def init_bytes(data)
     if data.class.to_s == 'Array' and data.all? {|e| e >= 0 and e <= 255 }
-      raise "The data's length is not correct" if self.class::BYTES_LENGTH != data.length
+      raise "Provided data's length is not correct, #{self.class} expect #{self.class::BYTES_LENGTH} but #{arr.length}" if self.class::BYTES_LENGTH != data.length
       @bytes = data
     elsif data.class.to_s == 'String' and data.start_with?('0x') and data.length % 2 == 0
       arr = data[2..].scan(/../).map(&:hex)
-      raise "The data's length is not correct" if self.class::BYTES_LENGTH != arr.length
+      raise "Provided data's length is not correct, #{self.class} expect #{self.class::BYTES_LENGTH} but #{arr.length}" if self.class::BYTES_LENGTH != arr.length
       @bytes = arr
     else
       raise "Provided data is not valid"
@@ -42,30 +42,51 @@ module ScaleBytes
   def to_bin
     @bytes.reduce('0b') { |bin, byte| bin + byte.to_s(2).rjust(8, '0') }
   end
+
+  def ==(another_object)
+    self.bytes == another_object.bytes
+  end
 end
 
-module UInt
+module SingleValue
   include ScaleBytes
   attr_reader :value
 
   def initialize(data)
     init_bytes(data)
+    # from raw @bytes to @value
     decode
   end
+
+  # TODO: better format
+  def to_s
+    %Q{type: #{self.class}
+    value: #{@value}
+    hex: #{to_hex}
+    bin: #{to_bin}
+}
+  end
+
+  def ==(another_object)
+    self.bytes == another_object.bytes && self.value == another_object.value
+  end
+end
+
+module Primitive
+  include SingleValue
+
+  def self.encode(value)
+    raise NotImplementedError
+  end
+end
+
+module FixedWidthUInt
+  include Primitive
 
   def decode
     bytes_reversed = @bytes.reverse
     hex = bytes_reversed.reduce('0x') { |hex, byte| hex + byte.to_s(16).rjust(2, '0') }
     @value = hex.to_i(16)
-  end
-
-  # TODO: better format
-  def to_s
-    "type: #{self.class}\nvalue: #{@value}\nhex: #{to_hex}\nbin: #{to_bin}"
-  end
-
-  def ==(another_object)
-    self.bytes == another_object.bytes && self.value == another_object.value
   end
 
   module ClassMethods
@@ -92,7 +113,7 @@ module UInt
   end
 end
 
-module Compact
+module CompactUInt
   include ScaleBytes
   attr_reader :value
 
@@ -215,6 +236,35 @@ module StructBase
     end
   end
   
+  def self.included(host)
+    host.extend ClassMethods
+  end
+end
+
+
+module Some
+  include SingleValue
+
+  def initialize(data)
+    if data.is_a? self.class::VALUE_TYPE
+      @value = data
+      @types = [1] + data.bytes
+    else
+      super(data)
+    end
+  end
+
+  def decode
+    @value = self::class::VALUE_TYPE.new @bytes[1..]
+  end
+
+  module ClassMethods
+    def set_value_type(value_type)
+      self.const_set :VALUE_TYPE, value_type
+      self.const_set :BYTES_LENGTH, value_type::BYTES_LENGTH + 1
+    end
+  end
+
   def self.included(host)
     host.extend ClassMethods
   end

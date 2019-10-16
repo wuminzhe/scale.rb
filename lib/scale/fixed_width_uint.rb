@@ -1,29 +1,30 @@
 module Scale
   module Types
-    # fixed width integer
+
+    class U8
+      include FixedWidthUInt
+      BYTES_LENGTH = 1
+    end
+
     class U16
-      include UInt
+      include FixedWidthUInt
       BYTES_LENGTH = 2
     end
 
     class U32
-      include UInt
+      include FixedWidthUInt
       BYTES_LENGTH = 4
     end
 
     class U64
-      include UInt
+      include FixedWidthUInt
       BYTES_LENGTH = 8
     end
-
-    class U256
-      include UInt
-      BYTES_LENGTH = 32
+    
+    class U128
+      include FixedWidthUInt
+      BYTES_LENGTH = 16
     end
 
-    class U512
-      include UInt
-      BYTES_LENGTH = 64
-    end
   end
 end
